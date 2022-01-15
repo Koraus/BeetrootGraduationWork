@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import CataloguePage from "../pages/CataloguePage"
 
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -19,6 +20,7 @@ const routes = [
     name: "catalogue",
     component: CataloguePage,
   },
+
 ];
 
 const router = new VueRouter({
