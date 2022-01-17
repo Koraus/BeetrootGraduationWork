@@ -35,7 +35,8 @@
         </button>
       </label>
       <ul class="categories">
-        <li class="categorie" :class="{ activeTag: categories.general }">
+    
+            <li class="categorie" :class="{ activeTag: categories.general }">
           <input
             type="checkbox"
             id="general"
@@ -45,7 +46,8 @@
           />
           <label for="general"> general </label>
         </li>
-        <li class="categorie" :class="{ activeTag: categories.anime }">
+
+            <li class="categorie" :class="{ activeTag: categories.anime }">
           <input
             type="checkbox"
             id="anime"
@@ -55,7 +57,8 @@
           />
           <label for="anime">anime</label>
         </li>
-        <li class="categorie" :class="{ activeTag: categories.people }">
+          <li class="categorie" :class="{ activeTag: categories.people }">
+
           <input
             type="checkbox"
             id="people"
@@ -162,7 +165,7 @@
 
       <div v-if="searchResponse !== undefined">
         <div class="cards-area">
-          <PosterCard 
+          <PosterCard  
             v-for="item in searchResponse.data"
             :key="item.id"
             :thumbSrc="item.thumbs.small"
@@ -172,7 +175,7 @@
             :item="item"
           />
 
-          <PopupWindow
+          <PopupWindow 
             :isOpen="selectedItem !== undefined"
             @a="selectedItem = undefined"
             :item="selectedItem"
@@ -181,23 +184,35 @@
 
         <div class="pagination-bar">
           <button
-            class="
+           
+              class="
               pagination-bar__btn
               pagination-bar__btn-prev
               pagination-bar__btn--bg
             "
+               :class="{paginationBarBtnDisabled:  !hasPrevPage}"
             @click="goToPage(searchResponse.meta.current_page - 1)"
           ></button>
-          <button class="pagination-bar__btn" @click="firstPaged()">1</button>
-          <button v-if="searchResponse.meta.current_page > 1" class="pagination-bar__btn" @click="goToPage(1)">{{}}</button>
-          <button class="pagination-bar__btn">....</button>
-          <button class="pagination-bar__btn" @click="goToPage(2)">2</button>
-          <button
-            class="pagination-bar__btn pagination-bar__btn-cur-page"
-            @click="goToPage(3)"
-          >
-            3
-          </button>
+
+          <button  class="pagination-bar__btn" @click="goToPage(1)" :class=" { activCrtPg: (searchResponse.meta.current_page == 1)}"  >1</button>
+
+
+          <button v-if=" searchResponse.meta.current_page !=1 && searchResponse.meta.current_page != searchResponse.meta.last_page " class="pagination-bar__btn activCrtPg " > {{searchResponse.meta.current_page}} </button>
+          
+          <span v-if="searchResponse.meta.current_page === searchResponse.meta.last_page && searchResponse.meta.last_page > 3  " class="pagination-bar__btn-for-last-page"  >
+
+            <button class="pagination-bar__btn" @click="goToPage(searchResponse.meta.last_page-2)">{{searchResponse.meta.last_page-2}}</button>
+            <button class="pagination-bar__btn" @click="goToPage(searchResponse.meta.last_page-1)">{{searchResponse.meta.last_page-1}}</button>
+           </span>
+          <span v-if="searchResponse.meta.last_page > 1" class="nav-btn">
+            <button v-if="searchResponse.meta.current_page != 1 && !searchResponse.meta.last_page " class="pagination-bar__btn" @click="goToPage(searchResponse.meta.current_page)"> {{searchResponse.meta.current_page}}  </button>
+            <button v-if="(searchResponse.meta.current_page+1) < searchResponse.meta.last_page" class="pagination-bar__btn" @click="goToPage(searchResponse.meta.current_page+1)">{{searchResponse.meta.current_page+1}}</button>
+            <button v-if="(searchResponse.meta.current_page+2) < searchResponse.meta.last_page" class="pagination-bar__btn" @click="goToPage(searchResponse.meta.current_page+2)">{{searchResponse.meta.current_page+2}}</button>
+          <button v-if=" (searchResponse.meta.last_page >= 6)  && (searchResponse.meta.current_page < (searchResponse.meta.last_page - 3 ) ) "  class="pagination-bar__btn">....</button> 
+          
+          <button class="pagination-bar__btn" @click="goToPage(searchResponse.meta.last_page)" :class=" { activCrtPg: (searchResponse.meta.current_page == searchResponse.meta.last_page)}" >{{searchResponse.meta.last_page}}</button>
+          </span>
+
           <button
             class="
               pagination-bar__btn
@@ -205,6 +220,8 @@
               pagination-bar__btn--bg
             "
             @click="goToPage(searchResponse.meta.current_page + 1)"
+            :class="{paginationBarBtnDisabled:  !hasNextPage}"
+            :disabled="!hasNextPage"
           ></button>
         </div>
         <div class="search-info">
@@ -283,9 +300,9 @@ export default {
         people: "",
       },
       isDrListSortByOpen: false,
-      classActiv: {
-        activeTag: "active-tag",
-      },
+
+      
+      
     };
   },
   computed: {
@@ -298,6 +315,9 @@ export default {
         this.searchResponse.meta.last_page
       );
     },
+    hasPrevPage(){
+      return (this.searchResponse.meta.current_page - 1) >=1
+    }
   },
 
   methods: {
@@ -496,6 +516,8 @@ export default {
   padding: 2px 10px 2px 10px;
   margin-right: 12px;
 }
+
+
 .activeTag {
   border: 2px solid rgba(0, 0, 0, 0.8);
   color: rgba(0, 0, 0, 1);
@@ -634,7 +656,7 @@ export default {
 .pagination-bar__btn:hover {
   border: 2px solid rgba(0, 0, 0, 1);
 }
-.pagination-bar__btn-cur-page {
+.activCrtPg {
   border: 1px solid black;
 }
 .pagination-bar__btn-prev::after {
@@ -647,6 +669,12 @@ export default {
   background: #f4f4f4;
 }
 
+.paginationBarBtnDisabled{
+  opacity: 10%;
+}
+.paginationBarBtnDisabled:hover{
+  border: none;
+}
 .search-info{
   font-family: "Manrope", sans-serif;
   font-style: normal;
