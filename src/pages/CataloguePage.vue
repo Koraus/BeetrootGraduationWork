@@ -1,16 +1,16 @@
 <template>
   <div class="catalog-page">
     <header class="header">
-      <img src="../img/logo.svg" alt="" />
+      <img    src="../img/logo.svg" alt="" />
 
       <ul class="quick-tags">
         <li class="quick-tag">Latest</li>
         <li class="quick-tag">Hot</li>
         <li class="quick-tag">Toplist</li>
       </ul>
-      <div class="footer-right">
+      <div class="header-right">
         <span>Random</span>
-        <img src="../img/header-ellipse.svg" alt="" />
+        <img v-on:click.stop="randomSearch()" src="../img/header-ellipse.svg" alt="" />
       </div>
     </header>
     <section class="search-settings-panel">
@@ -28,7 +28,7 @@
           placeholder="Enter your request"
         />
         <button
-          v-on:click="serarchRequest()"
+          v-on:click.stop="serarchRequest()"
           class="search-settings-panel__search-btn"
         >
           Search
@@ -41,6 +41,7 @@
             id="general"
             value="1"
             v-model="categories.general"
+              v-on:click.stop="serarchRequest()"
           />
           <label for="general"> general </label>
         </li>
@@ -50,6 +51,7 @@
             id="anime"
             value="1"
             v-model="categories.anime"
+              v-on:click.stop="serarchRequest()"
           />
           <label for="anime">anime</label>
         </li>
@@ -59,23 +61,20 @@
             id="people"
             value="1"
             v-model="categories.people"
+              v-on:click.stop="serarchRequest()"
           />
           <label for="people">people</label>
         </li>
       </ul>
-
-      <h1>
-        {{ searchInput }}
-      </h1>
     </section>
 
     <div class="cards-area__wrap">
       <h2 class="title-sorting">{{ sortByTitle() }}</h2>
 
       <div class="filter-panels-area">
-
         <form
           class="filter-panel"
+          
           @click.stop="
             isDrListSortByOpen
               ? (isDrListSortByOpen = false)
@@ -84,26 +83,18 @@
         >
           <span class="filter-panel__text">
             Sorting by:
-            <span class="filter-panel__text-selected">{{
-              sortByTitle()
-            }}</span>
+            <span class="filter-panel__text-selected">{{ sortByTitle() }}</span>
           </span>
 
-          <div
-            class="filter-panel__drop-list"
-            v-show="isDrListSortByOpen"
-          >
-            <label
-              for="Choice1"
-              @click.stop="
-                (isDrListSortByOpen = false)"
-            >
+          <div class="filter-panel__drop-list" v-show="isDrListSortByOpen">
+            <label for="Choice1" @click.stop="isDrListSortByOpen = false">
               <input
                 type="radio"
                 id="Choice1"
                 name="filter"
                 value="relevance"
                 v-model="sortBy"
+                  v-on:click.stop="serarchRequest()"
               />
               Relevance
             </label>
@@ -115,6 +106,7 @@
                 name="filter"
                 value="random"
                 v-model="sortBy"
+                  v-on:click.stop="serarchRequest()"
               />Random</label
             >
 
@@ -125,6 +117,7 @@
                 name="filter"
                 value="views"
                 v-model="sortBy"
+                  v-on:click.stop="serarchRequest()"
               />Views
             </label>
           </div>
@@ -133,55 +126,50 @@
         <form
           class="filter-panel filter-panel__color"
           @click.stop="
-            isColorBarOpen
-              ? (isColorBarOpen = false)
-              : (isColorBarOpen = true)
+            isColorBarOpen ? (isColorBarOpen = false) : (isColorBarOpen = true)
           "
         >
           <span class="filter-panel__text">
             Color:
-            <span class="filter-panel__selected-color" :style="{ backgroundColor: '#' + colorFilter } ">    </span>
-
+            <span
+              class="filter-panel__selected-color"
+              :style="{ backgroundColor: '#' + colorFilter }"
+            >
+            </span>
           </span>
 
           <div
             class="filter-panel__drop-list_for-color"
             v-show="isColorBarOpen"
           >
-           
-              <div @click.stop="isColorBarOpen = true" class="color-style-div">
-
-                <ul :v-show="isColorBarOpen" class="color-ul-style">
-                  <li
-                    class="color-li-style"
-                    v-for="item in colorForChoose"
-                    :key="colorForChoose.indexOf(item)"
-                    :style="{ backgroundColor: '#' + item }"
-                    @click.stop="
-                      (colorFilter = item),
-                        (isColorBarOpen = false),
-                        log(isColorBarOpen)
-                    "
-                  >
-                    {{item}}
-                  </li>
-                </ul>
-            
-              </div>
-            
+            <div @click.stop="isColorBarOpen = true" class="color-style-div">
+              <ul :v-show="isColorBarOpen" class="color-ul-style">
+                <li
+                  class="color-li-style"
+                  v-for="item in colorForChoose"
+                  :key="colorForChoose.indexOf(item)"
+                  :style="{ backgroundColor: '#' + item }"
+                  @click.stop="(colorFilter = item), (isColorBarOpen = false)"
+                    v-on:click.stop="serarchRequest()"
+                >
+                  {{ item }}
+                </li>
+              </ul>
+            </div>
           </div>
         </form>
       </div>
 
       <div v-if="searchResponse !== undefined">
         <div class="cards-area">
-          <PosterCard
+          <PosterCard 
             v-for="item in searchResponse.data"
             :key="item.id"
             :thumbSrc="item.thumbs.small"
             :posterCategory="item.category"
             v-on:click.native="selectedItem = item"
             class="card"
+            :item="item"
           />
 
           <PopupWindow
@@ -190,26 +178,41 @@
             :item="selectedItem"
           />
         </div>
+
+        <div class="pagination-bar">
+          <button
+            class="
+              pagination-bar__btn
+              pagination-bar__btn-prev
+              pagination-bar__btn--bg
+            "
+            @click="goToPage(searchResponse.meta.current_page - 1)"
+          ></button>
+          <button class="pagination-bar__btn" @click="firstPaged()">1</button>
+          <button v-if="searchResponse.meta.current_page > 1" class="pagination-bar__btn" @click="goToPage(1)">{{}}</button>
+          <button class="pagination-bar__btn">....</button>
+          <button class="pagination-bar__btn" @click="goToPage(2)">2</button>
+          <button
+            class="pagination-bar__btn pagination-bar__btn-cur-page"
+            @click="goToPage(3)"
+          >
+            3
+          </button>
+          <button
+            class="
+              pagination-bar__btn
+              pagination-bar__btn-next
+              pagination-bar__btn--bg
+            "
+            @click="goToPage(searchResponse.meta.current_page + 1)"
+          ></button>
+        </div>
         <div class="search-info">
-          <span>Got {{ searchResponse.meta.total }} results </span>
+          <span>Got {{ searchResponse.meta.total }} results </span> <br/>
           <span
             >Current page {{ searchResponse.meta.current_page }} /
             {{ searchResponse.meta.last_page }}
           </span>
-          <button
-            v-if="hasNextPage"
-            v-on:click="nextPage()"
-            class="cards-area__btn-next"
-          >
-            next
-          </button>
-          <button
-            v-if="hasNextPage"
-            v-on:click="lastPage()"
-            class="cards-area__btn-next"
-          >
-            last
-          </button>
         </div>
       </div>
     </div>
@@ -221,6 +224,10 @@
 // @ is an alias to /src
 import PosterCard from "@/components/PosterCard.vue";
 import PopupWindow from "@/components/PopupWindow.vue";
+
+// const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+const apiUrl = "https://wallhaven.cc/api/v1";
 
 export default {
   name: "CataloguePage",
@@ -295,46 +302,21 @@ export default {
 
   methods: {
     async serarchRequest() {
-      this.searchResponse = await (
-        await fetch(
-          `https://cors-anywhere.herokuapp.com/https://wallhaven.cc/api/v1/search?q=${
-            this.searchInput
-          }&categories=${
-            String(Number(this.categories.general)) +
-            String(Number(this.categories.anime)) +
-            String(Number(this.categories.people))
-          }&sorting=${this.sortBy}&colors=${this.colorFilter}`
-        )
-      ).json();
+      await this.goToPage(1);
     },
-    async nextPage() {
+    async goToPage(page) {
+      const searchParams = new URLSearchParams({
+        q: this.searchInput,
+        categories:
+          String(Number(this.categories.general)) +
+          String(Number(this.categories.anime)) +
+          String(Number(this.categories.people)),
+        colors: this.colorFilter,
+        sorting: this.sortBy,
+        page,
+      });
       this.searchResponse = await (
-        await fetch(
-          `https://cors-anywhere.herokuapp.com/https://wallhaven.cc/api/v1/search?q=${
-            this.searchInput
-          }&categories=${
-            String(Number(this.categories.general)) +
-            String(Number(this.categories.anime)) +
-            String(Number(this.categories.people))
-          }&sorting=${this.sortBy}}&colors=${this.colorFilter}&page=${
-            this.searchResponse.meta.current_page + 1
-          }`
-        )
-      ).json();
-    },
-    async lastPage() {
-      this.searchResponse = await (
-        await fetch(
-          `https://cors-anywhere.herokuapp.com/https://wallhaven.cc/api/v1/search?q=${
-            this.searchInput
-          }&categories=${
-            String(Number(this.categories.general)) +
-            String(Number(this.categories.anime)) +
-            String(Number(this.categories.people))
-          }&sorting=${this.sortBy}}&colors=${this.colorFilter}&page=${
-            this.searchResponse.meta.last_page
-          }`
-        )
+        await fetch(`${proxyUrl}${apiUrl}/search?${searchParams}`)
       ).json();
     },
     openPopup() {
@@ -346,6 +328,11 @@ export default {
     sortByTitle() {
       return this.sortBy[0].toUpperCase() + this.sortBy.slice(1);
     },
+    async randomSearch(){
+        this.searchResponse = await (
+        await fetch(`${proxyUrl}${apiUrl}/search?random`)
+      ).json();
+    }
   },
 };
 </script>
@@ -417,7 +404,6 @@ export default {
   padding-top: 0;
   margin-right: 0;
 
-
   width: 224px;
   height: auto;
 }
@@ -435,17 +421,17 @@ export default {
   text-align: center;
   color: white;
 }
-.color-li-style:hover{
-transform: scale(1.2);
+.color-li-style:hover {
+  transform: scale(1.2);
 }
-.filter-panel__selected-color{
+.filter-panel__selected-color {
   display: inline-block;
   width: 50%;
   height: 20px;
   border-radius: 10px;
   margin-bottom: -4px;
-  margin-right: 20px ;
-  margin-left: 20px ;
+  margin-right: 20px;
+  margin-left: 6px;
 }
 .header {
   display: flex;
@@ -623,12 +609,51 @@ transform: scale(1.2);
   font-size: 16px;
   color: rgba(0, 0, 0, 1);
 }
-.filter-panels-area{
+.filter-panels-area {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   /* justify-content: center; */
-  
+}
+
+.pagination-bar__btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  font-family: "Manrope", sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  text-align: center;
+  margin-right: 16px;
+  margin-left: 16px;
+  margin-bottom: 20px;
+}
+.pagination-bar__btn:hover {
+  border: 2px solid rgba(0, 0, 0, 1);
+}
+.pagination-bar__btn-cur-page {
+  border: 1px solid black;
+}
+.pagination-bar__btn-prev::after {
+  content: url(../img/btn-prev.svg);
+}
+.pagination-bar__btn-next::after {
+  content: url(../img/btn-next.svg);
+}
+.pagination-bar__btn--bg {
+  background: #f4f4f4;
+}
+
+.search-info{
+  font-family: "Manrope", sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
 }
 
 /* visibility: hidden;*/

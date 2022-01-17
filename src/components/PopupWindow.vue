@@ -1,11 +1,12 @@
 <template>
   <div v-if="isOpen" class="bg-drop" @click="close">
     <div class="popup-window">
-      <h1>{{ item.category }} {{ item.resolution }}</h1>
-      <img class="popup-window__img" :src="item.path" alt="" />
+  
+      <img class="popup-window__img" :src="item.path" alt="" referrerPolicy="no-referrer" />
       <slot> </slot>
-      <button @click="close" class="popup-btn-esc">Esc</button>
-      <button @click="log" class="popup-btn-ok">Ok</button>
+<!-- 
+      <button @click="close" class="popup-btn-esc">Esc</button> -->
+
     </div>
   </div>
 </template>
@@ -51,26 +52,33 @@ export default {
   z-index: 100;
 }
 .popup-window {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   width: 90%;
-  height: 90%;
-  background: rgb(2, 7, 77);
-  top: 50px;
+  height: 86%;
+  background: #F4F4F4;
+  border-radius: 16px;
+  top: 30px;
   left: 50%;
   transform: translateX(-50%);
   position: fixed;
   z-index: 101;
+  padding: 50px;
+}
+.popup-window::after{
+position: absolute;
+content: url('../img/popupEsc.svg');
+top: 10px;
+right: 10px;
+
 }
 .popup-window__img {
-    max-width: 90%;
-    max-width: 90%;
-
-  height: auto;
-  width: auto;
-  border: green 2px solid;
+  object-fit: cover;
+        width: 100%;
+        height: 100%;
 }
 </style>
 
