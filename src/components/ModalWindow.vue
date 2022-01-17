@@ -27,12 +27,12 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .modal-window{
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgb(0, 68, 255);
+    width: 100%;
+    height: 100%;
+    background: red;
     font-size: 30px;
     display: flex;
     justify-content: center;
@@ -42,11 +42,10 @@ export default {
     box-shadow: 2px 2px 4px rgb(9, 5, 48);
     box-sizing: border-box;
     display: block;
-    overflow-y: scroll;
 }
 .modal-window__img{
-    width: 90%;
-    height: auto;
+    width: fit-content;
+    height: fit-content;
     margin-bottom: 20px;
     
 
