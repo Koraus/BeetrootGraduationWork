@@ -1,16 +1,14 @@
 <template>
   <div class="catalog-page">
     <header class="header">
-      <img    src="../img/logo.svg" alt="" />
+      <img src="../img/logo.svg" alt="" />
 
-      <ul class="quick-tags">
-        <li class="quick-tag">Latest</li>
-        <li class="quick-tag">Hot</li>
-        <li class="quick-tag">Toplist</li>
-      </ul>
       <div class="header-right">
-        <span>Random</span>
-        <img v-on:click.stop="randomSearch()" src="../img/header-ellipse.svg" alt="" />
+        <img
+          v-on:click.stop="randomSearch()"
+          src="../img/header-ellipse.svg"
+          alt=""
+        />
       </div>
     </header>
     <section class="search-settings-panel">
@@ -35,36 +33,34 @@
         </button>
       </label>
       <ul class="categories">
-    
-            <li class="categorie" :class="{ activeTag: categories.general }">
+        <li class="categorie" :class="{ activeTag: categories.general }">
           <input
             type="checkbox"
             id="general"
             value="1"
             v-model="categories.general"
-              v-on:click.stop="serarchRequest()"
+            v-on:click.stop="serarchRequest()"
           />
           <label for="general"> general </label>
         </li>
 
-            <li class="categorie" :class="{ activeTag: categories.anime }">
+        <li class="categorie" :class="{ activeTag: categories.anime }">
           <input
             type="checkbox"
             id="anime"
             value="1"
             v-model="categories.anime"
-              v-on:click.stop="serarchRequest()"
+            v-on:click.stop="serarchRequest()"
           />
           <label for="anime">anime</label>
         </li>
-          <li class="categorie" :class="{ activeTag: categories.people }">
-
+        <li class="categorie" :class="{ activeTag: categories.people }">
           <input
             type="checkbox"
             id="people"
             value="1"
             v-model="categories.people"
-              v-on:click.stop="serarchRequest()"
+            v-on:click.stop="serarchRequest()"
           />
           <label for="people">people</label>
         </li>
@@ -77,7 +73,6 @@
       <div class="filter-panels-area">
         <form
           class="filter-panel"
-          
           @click.stop="
             isDrListSortByOpen
               ? (isDrListSortByOpen = false)
@@ -97,7 +92,7 @@
                 name="filter"
                 value="relevance"
                 v-model="sortBy"
-                  v-on:click.stop="serarchRequest()"
+                v-on:click.stop="serarchRequest()"
               />
               Relevance
             </label>
@@ -109,7 +104,7 @@
                 name="filter"
                 value="random"
                 v-model="sortBy"
-                  v-on:click.stop="serarchRequest()"
+                v-on:click.stop="serarchRequest()"
               />Random</label
             >
 
@@ -120,7 +115,7 @@
                 name="filter"
                 value="views"
                 v-model="sortBy"
-                  v-on:click.stop="serarchRequest()"
+                v-on:click.stop="serarchRequest()"
               />Views
             </label>
           </div>
@@ -153,7 +148,7 @@
                   :key="colorForChoose.indexOf(item)"
                   :style="{ backgroundColor: '#' + item }"
                   @click.stop="(colorFilter = item), (isColorBarOpen = false)"
-                    v-on:click.stop="serarchRequest()"
+                  v-on:click.stop="serarchRequest()"
                 >
                   {{ item }}
                 </li>
@@ -165,7 +160,7 @@
 
       <div v-if="searchResponse !== undefined">
         <div class="cards-area">
-          <PosterCard  
+          <PosterCard
             v-for="item in searchResponse.data"
             :key="item.id"
             :thumbSrc="item.thumbs.small"
@@ -175,7 +170,7 @@
             :item="item"
           />
 
-          <PopupWindow 
+          <PopupWindow
             :isOpen="selectedItem !== undefined"
             @a="selectedItem = undefined"
             :item="selectedItem"
@@ -184,33 +179,107 @@
 
         <div class="pagination-bar">
           <button
-           
-              class="
+            class="
               pagination-bar__btn
               pagination-bar__btn-prev
               pagination-bar__btn--bg
             "
-               :class="{paginationBarBtnDisabled:  !hasPrevPage}"
+            :class="{ paginationBarBtnDisabled: !hasPrevPage }"
             @click="goToPage(searchResponse.meta.current_page - 1)"
           ></button>
 
-          <button  class="pagination-bar__btn" @click="goToPage(1)" :class=" { activCrtPg: (searchResponse.meta.current_page == 1)}"  >1</button>
+          <button
+            class="pagination-bar__btn"
+            @click="goToPage(1)"
+            :class="{ activCrtPg: searchResponse.meta.current_page == 1 }"
+          >
+            1
+          </button>
 
+          <button
+            v-if="
+              searchResponse.meta.current_page != 1 &&
+              searchResponse.meta.current_page != searchResponse.meta.last_page
+            "
+            class="pagination-bar__btn activCrtPg"
+          >
+            {{ searchResponse.meta.current_page }}
+          </button>
 
-          <button v-if=" searchResponse.meta.current_page !=1 && searchResponse.meta.current_page != searchResponse.meta.last_page " class="pagination-bar__btn activCrtPg " > {{searchResponse.meta.current_page}} </button>
-          
-          <span v-if="searchResponse.meta.current_page === searchResponse.meta.last_page && searchResponse.meta.last_page > 3  " class="pagination-bar__btn-for-last-page"  >
-
-            <button class="pagination-bar__btn" @click="goToPage(searchResponse.meta.last_page-2)">{{searchResponse.meta.last_page-2}}</button>
-            <button class="pagination-bar__btn" @click="goToPage(searchResponse.meta.last_page-1)">{{searchResponse.meta.last_page-1}}</button>
-           </span>
+          <span
+            v-if="
+              searchResponse.meta.current_page ===
+                searchResponse.meta.last_page &&
+              searchResponse.meta.last_page > 3
+            "
+            class="pagination-bar__btn-for-last-page"
+          >
+            <button
+              class="pagination-bar__btn"
+              @click="goToPage(searchResponse.meta.last_page - 2)"
+            >
+              {{ searchResponse.meta.last_page - 2 }}
+            </button>
+            <button
+              class="pagination-bar__btn"
+              @click="goToPage(searchResponse.meta.last_page - 1)"
+            >
+              {{ searchResponse.meta.last_page - 1 }}
+            </button>
+          </span>
           <span v-if="searchResponse.meta.last_page > 1" class="nav-btn">
-            <button v-if="searchResponse.meta.current_page != 1 && !searchResponse.meta.last_page " class="pagination-bar__btn" @click="goToPage(searchResponse.meta.current_page)"> {{searchResponse.meta.current_page}}  </button>
-            <button v-if="(searchResponse.meta.current_page+1) < searchResponse.meta.last_page" class="pagination-bar__btn" @click="goToPage(searchResponse.meta.current_page+1)">{{searchResponse.meta.current_page+1}}</button>
-            <button v-if="(searchResponse.meta.current_page+2) < searchResponse.meta.last_page" class="pagination-bar__btn" @click="goToPage(searchResponse.meta.current_page+2)">{{searchResponse.meta.current_page+2}}</button>
-          <button v-if=" (searchResponse.meta.last_page >= 6)  && (searchResponse.meta.current_page < (searchResponse.meta.last_page - 3 ) ) "  class="pagination-bar__btn">....</button> 
-          
-          <button class="pagination-bar__btn" @click="goToPage(searchResponse.meta.last_page)" :class=" { activCrtPg: (searchResponse.meta.current_page == searchResponse.meta.last_page)}" >{{searchResponse.meta.last_page}}</button>
+            <button
+              v-if="
+                searchResponse.meta.current_page != 1 &&
+                !searchResponse.meta.last_page
+              "
+              class="pagination-bar__btn"
+              @click="goToPage(searchResponse.meta.current_page)"
+            >
+              {{ searchResponse.meta.current_page }}
+            </button>
+            <button
+              v-if="
+                searchResponse.meta.current_page + 1 <
+                searchResponse.meta.last_page
+              "
+              class="pagination-bar__btn"
+              @click="goToPage(searchResponse.meta.current_page + 1)"
+            >
+              {{ searchResponse.meta.current_page + 1 }}
+            </button>
+            <button
+              v-if="
+                searchResponse.meta.current_page + 2 <
+                searchResponse.meta.last_page
+              "
+              class="pagination-bar__btn"
+              @click="goToPage(searchResponse.meta.current_page + 2)"
+            >
+              {{ searchResponse.meta.current_page + 2 }}
+            </button>
+            <button
+              v-if="
+                searchResponse.meta.last_page >= 6 &&
+                searchResponse.meta.current_page <
+                  searchResponse.meta.last_page - 3
+              "
+              class="pagination-bar__btn"
+            >
+              ....
+            </button>
+
+            <button
+              class="pagination-bar__btn"
+              @click="goToPage(searchResponse.meta.last_page)"
+              :class="{
+                activCrtPg:
+                  searchResponse.meta.current_page ==
+                  searchResponse.meta.last_page,
+              }"
+            >
+              {{ searchResponse.meta.last_page }}
+            </button>
           </span>
 
           <button
@@ -220,12 +289,12 @@
               pagination-bar__btn--bg
             "
             @click="goToPage(searchResponse.meta.current_page + 1)"
-            :class="{paginationBarBtnDisabled:  !hasNextPage}"
+            :class="{ paginationBarBtnDisabled: !hasNextPage }"
             :disabled="!hasNextPage"
           ></button>
         </div>
         <div class="search-info">
-          <span>Got {{ searchResponse.meta.total }} results </span> <br/>
+          <span>Got {{ searchResponse.meta.total }} results </span> <br />
           <span
             >Current page {{ searchResponse.meta.current_page }} /
             {{ searchResponse.meta.last_page }}
@@ -242,8 +311,10 @@
 import PosterCard from "@/components/PosterCard.vue";
 import PopupWindow from "@/components/PopupWindow.vue";
 
+const proxyUrl = "https://cors-proxy-ce3b.ndry.workers.dev/?";
 // const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+// const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+
 const apiUrl = "https://wallhaven.cc/api/v1";
 
 export default {
@@ -300,9 +371,6 @@ export default {
         people: "",
       },
       isDrListSortByOpen: false,
-
-      
-      
     };
   },
   computed: {
@@ -315,9 +383,9 @@ export default {
         this.searchResponse.meta.last_page
       );
     },
-    hasPrevPage(){
-      return (this.searchResponse.meta.current_page - 1) >=1
-    }
+    hasPrevPage() {
+      return this.searchResponse.meta.current_page - 1 >= 1;
+    },
   },
 
   methods: {
@@ -348,11 +416,11 @@ export default {
     sortByTitle() {
       return this.sortBy[0].toUpperCase() + this.sortBy.slice(1);
     },
-    async randomSearch(){
-        this.searchResponse = await (
+    async randomSearch() {
+      this.searchResponse = await (
         await fetch(`${proxyUrl}${apiUrl}/search?random`)
       ).json();
-    }
+    },
   },
 };
 </script>
@@ -384,7 +452,7 @@ export default {
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
-  width: 40%;
+  width: 60%;
   height: 56px;
   box-sizing: border-box;
   padding-right: 20px;
@@ -516,7 +584,6 @@ export default {
   padding: 2px 10px 2px 10px;
   margin-right: 12px;
 }
-
 
 .activeTag {
   border: 2px solid rgba(0, 0, 0, 0.8);
@@ -669,13 +736,13 @@ export default {
   background: #f4f4f4;
 }
 
-.paginationBarBtnDisabled{
+.paginationBarBtnDisabled {
   opacity: 10%;
 }
-.paginationBarBtnDisabled:hover{
+.paginationBarBtnDisabled:hover {
   border: none;
 }
-.search-info{
+.search-info {
   font-family: "Manrope", sans-serif;
   font-style: normal;
   font-weight: normal;
@@ -684,6 +751,88 @@ export default {
   color: rgba(0, 0, 0, 0.6);
 }
 
-/* visibility: hidden;*/
+@media (max-width: 800px) {
+  .search-settings-panel__input {
+    width: 80%;
+  }
+
+}
+@media (max-width: 500px) {
+  .catalog-page {
+    padding: 5px;
+  }
+  .card {
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 16px;
+}
+  .search-settings-panel__input {
+    width: 90%;
+  }
+  .search-settings-panel {
+    padding-top: 20px;
+    padding-bottom: 23px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+;
+  }
+  .search-settings-panel__title {
+    margin-top: 10px;
+    font-size: 50px;
+  }
+  .title-sorting {
+    text-align: center;
+    margin: 10px 0 20px 0;
+  }
+  .filter-panels-area {
+    align-items: center;
+    justify-content: center;
+  }
+  .search-settings-panel__search-btn {
+    padding: 1px;
+    width: 65px;
+  }
+  .categories {
+    padding-inline-start: 0;
+  }
+  .filter-panel {
+    margin-bottom: 16px;
+    margin-right: 0px;
+    width: 100%;
+    
+  }
+  .filter-panel__drop-list{
+        margin-bottom: 16px;
+    margin-right: 0px;
+    width: 100%;
+  }
+  .filter-panel__drop-list_for-color{
+           margin-bottom: 16px;
+    margin-right: 0px;
+    width: 100%;
+  }
+  .color-ul-style{
+    width: 100%;
+  }
+  .color-li-style{
+    width: 58px;
+  }
+  
+   
+}
+@media (max-width: 321px) {
+  .search-settings-panel__title {
+    font-size: 40px;
+  }
+  .search-settings-panel__input {
+    font-size: 14px;
+    padding-right: 110px;
+  }
+
+  .search-settings-panel__input:placeholder-shown {
+    text-overflow: ellipsis;
+  }
+}
 </style>
 

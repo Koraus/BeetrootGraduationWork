@@ -48,11 +48,13 @@ export default {
   min-width: 340px;
   max-width: 520px;
   background: rgb(255, 255, 255);
-  box-shadow: 2px 2px 4px rgb(9, 5, 48);
+  // box-shadow: 2px 2px 4px rgb(9, 5, 48);
   box-sizing: border-box;
+    border-radius: 16px;
 }
 .poster-card__img {
   width: 100%;
+  border-radius: 16px;
 
 }
 .poster-card__name {
@@ -110,7 +112,14 @@ export default {
   filter: brightness(0.8);
 }
 
+@media (max-width: 500px) {
+  .poster-card{  width: 100%; }
+  .card {
+  width: 100%;
+  margin-right: 0;
+  margin-left: 0;}
 
+}
 
 
 </style>

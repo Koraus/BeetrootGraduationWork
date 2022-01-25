@@ -66,8 +66,13 @@ export default {
   transform: translateX(-50%);
   position: fixed;
   z-index: 101;
-  padding: 50px;
+  padding: 10px;
 }
+
+
+
+
+
 .popup-window::after{
 position: absolute;
 content: url('../img/popupEsc.svg');
@@ -79,6 +84,10 @@ right: 10px;
   object-fit: cover;
         width: 100%;
         height: 100%;
+        border-radius: 16px;
 }
+
+
+
 </style>
 
